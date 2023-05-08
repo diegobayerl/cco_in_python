@@ -1,35 +1,33 @@
+# código de exemplo CCO
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.stats import binom
 
-def calculate_acceptance_rate(samples, target_mean, tolerance):
-    accepted = np.abs(samples.mean() - target_mean) <= tolerance
-    return np.mean(accepted)
+#criação da cco
+def characteristic_curve(n, p):
+    x = np.arange(0, n+1)       # Vetor com valores randomicos
+    y = 1 - binom.cdf(x, n, p)  # Subtrai os valores de 1 para inverter a curva
+    return x, y
 
-# Parâmetros do processo
-target_mean = 50.0  # Média alvo
-tolerance = 1.0    # Tolerância
-
-# Faixa de valores para a média do processo
-mean_values = np.linspace(40.0, 60.0, 100)
-
-# Lista para armazenar as taxas de aceitação
-acceptance_rates = []
-
-# Calcular a taxa de aceitação para cada valor de média
-for mean in mean_values:
-    # Gerar uma amostra de tamanho 100 do processo
-    samples = np.random.normal(mean, 5.0, size=100)
+#plotando gráfico no python para a identificação
+def plot_characteristic_curve(n, p):
+    x, y = characteristic_curve(n, p)
     
-    # Calcular a taxa de aceitação para a média atual
-    acceptance_rate = calculate_acceptance_rate(samples, target_mean, tolerance)
-    acceptance_rates.append(acceptance_rate)
+    plt.plot(x, y, 'b--', label="CCO")
+    plt.title("Curva de Características de Operações")
+    plt.xlabel("Número de defeitos")
+    plt.ylabel("Probabilidade de rejeição")
+    plt.style.use('classic')
+    
+    plt.legend()
+    plt.grid(True)
+    plt.show()
 
-# Plotar a Curva Característica de Operação (CCO)
-plt.plot(mean_values, acceptance_rates)
-plt.axhline(y=0.95, color='r', linestyle='--', label='Nível de Aceitação Desejado')
-plt.xlabel('Valor Médio do Processo')
-plt.ylabel('Taxa de Aceitação')
-plt.title('Curva Característica de Operação (CCO)')
-plt.legend()
-plt.grid(True)
-plt.show()
+# Exemplo de uso
+n = 20  # Número de itens inspecionados
+p = 0.1  # Probabilidade de um item ser defeituoso
+
+plot_characteristic_curve(n, p)
+
+#https://gepac.github.io/2019-05-17-intro-matplotlib/
+#https://matplotlib.org/stable/api/index.html
